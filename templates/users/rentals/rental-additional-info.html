@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Additional Info | EZBZ Rentals</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta content="" name="description" />
+<meta content="" name="author" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="shortcut icon" href="/static/users/images/favicon.ico">
+<link href="/static/users/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+<link href="/static/users/css/icons.min.css" rel="stylesheet" type="text/css" />
+<link href="/static/users/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+<link href="/static/users/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+<link href="/static/users/css/custom.css" rel="stylesheet" type="text/css" />
+</head>
+<body data-layout="horizontal">
+<div id="layout-wrapper">
+{% include 'users/base/header.html'%}
+<div class="main-content">
+<div class="page-content">
+<div class="container">
+  <div class="row">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-3 mrgbp brdr">
+              {% include 'users/rentals/rental_nav.html'%}
+            </div>
+            <div class="col-lg-9">
+              <h5>Additional Info</h5>
+              <p>Lorem Ipsum è un testo segnaposto utilizzato nel settore della tipografia e della stampa. Lorem Ipsum è considerato il testo segnaposto standard</p>
+              <hr>
+              {% if messages %}
+              {% for message in messages %}
+              <div class="alert alert-success alert-dismissible fade show" role="alert">{{message}}   
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"
+                  aria-label="Close"></button>
+              </div>
+              {% endfor %}
+              {%endif%}
+              <form method="POST" enctype="multipart/form-data" class="post-form" action="/rentals/cleaning-update/{{rentalcleaning.id}}">
+                {% csrf_token %}
+              <div class="cleaning_services">
+                <div class="mb-3">
+                  <p><strong>Cleaning</strong></p>
+                  <input type="checkbox" class="form-check-input" name="cleaning_available" id="CleaningCheck" value="Yes" {% if rentalcleaning.cleaning_available == 'Yes' %} checked {% endif %}> Cleaning is available
+                  {% comment %} {% if rentalcleaning.cleaning_available == 'Yes' %} checked {% endif %}  {% endcomment %}
+                </div>
+                <div class="row mb-3 hide" id="CleaningDiv">
+                  <div class="col-lg-6 mb-3">
+                    <label class="form-label fw6">Cleaning basis</label>
+                    <select name="cleaning_basis" id="cleaning_basis" class="form-select">
+                      <option>--Select--</option>  
+                      <option value="included" {% if rentalcleaning.cleaning_basis == "included" %} selected {% endif %}>Mandatory - included</option>
+                      <option value="mandatory" {% if rentalcleaning.cleaning_basis == "mandatory" %} selected {% endif %}>Mandatory - for a fee</option>
+                      <option value="optional" {% if rentalcleaning.cleaning_basis == "optional" %} selected {% endif %}>Optional</option>                
+                    </select>
+                </div>
+                <div class="col-lg-6 hide" id="CleaningPrice">
+                  <label class="form-label fw6">Price in INR<span class="strict">*</span></label>
+                  <input type="text" class="form-control" name="price" value="{{rentalcleaning.price}}">
+                </div>
+              </div>
+              </div>
+              <div class="mb-3">
+                <input type="submit" class="btn btn-primary" value="Save">
+               </div>
+            </form>
+            <form method="POST" enctype="multipart/form-data" class="post-form" action="/rentals/deposit-update/{{rentaldeposit.id}}">
+              {% csrf_token %}
+              <div class="cleaning_services">
+                <div class="mb-3">
+                  <p><strong>Security deposit</strong></p>
+                  <input type="checkbox" class="form-check-input" name="security_deposit" id="SecurityCheck" value="Yes" {% if rentaldeposit.security_deposit == 'Yes' %} checked {% endif %}> I require a security deposit
+                </div>
+                <div class="row mb-3 hide" id="SecurityDeposit">                 
+                <div class="col-lg-6">
+                  <label class="form-label fw6">Amount in INR<span class="strict">*</span></label>
+                  <input type="text" class="form-control" id="SecurityAmount" name="amount" value="{{rentaldeposit.amount}}" required>
+                </div>
+              </div>
+              </div>
+              <div class="mb-3">
+                <input type="submit" class="btn btn-primary" value="Save">
+               </div>
+            </form>
+            
+            <div class="row mb-3">  
+              <div class="col-lg-12 mb-3"><strong>Taxes</strong></div>
+              {% for rentaltaxs in rentaltax %}
+              <div class="col-lg-4">
+                <div class="card border border-success">                  
+                    <div class="card-body">
+                      <a href="" data-bs-toggle="modal" data-bs-target="#taxModalScrollableEdit" class="editTax">
+                        <i class="mdi mdi-lead-pencil"></i>                    
+                      </a>
+                      <a href="/rentals/tax-delete/{{rentaltaxs.id}}" onclick="return DelItem();" class="editTrash">
+                      <i class="far fa-trash-alt"></i>
+                      </a>
+                      <p><strong>{{rentaltaxs.tax_type}}</strong> </p>
+                      <p>{{rentaltaxs.percentage}} {{rentaltaxs.amountin}} {{rentaltaxs.fee_basis}}</p>
+                     
+                    </div>
+                </div>
+              </div>
+              {% endfor %} 
+              <div class="col-lg-4">
+                <div class="card border border-success">                  
+                    <div class="card-body text-center">
+                        <a href="" data-bs-toggle="modal" data-bs-target="#taxModalScrollable">
+                            <i class="fas fa-plus"></i>
+                            <h5 class="card-title mt-0">Add tax</h5>                        
+                        </a>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-3">  
+              <div class="col-lg-12 mb-3"><strong>Optional extras and services</strong></div>
+              {% for extraservice in extraservices %}
+              <div class="col-lg-6">
+                <div class="card border border-success">                  
+                    <div class="card-body">
+                      <a href="" data-bs-toggle="modal" data-bs-target="#extraModalScrollableEdit" class="editTax">
+                        <i class="mdi mdi-lead-pencil"></i>                    
+                      </a>
+                      <a href="" onclick="return DelItem();" class="editTrash">
+                      <i class="far fa-trash-alt"></i>
+                      </a>
+                      <p><strong>Service name</strong>: {{extraservice.service_name}} </p>
+                      <p><strong>Provided</strong>: {{extraservice.service_provided}} </p>
+                      <p><strong>Fee basis</strong>: {{extraservice.fee_basis}} </p>
+                      <p><strong>Price in INR</strong>: {{extraservice.service_price}} </p>
+                      <p><strong>Earliest the guest can order it</strong>: {{extraservice.earliest_guest_order}} </p>
+                      <p><strong>Latest the guest can order it</strong>: {{extraservice.latest_guest_order}} </p>
+                      <p><strong>Guest can cancel the order</strong>: {{extraservice.guest_cancel_order}} </p>
+                      <p><strong>Additional information</strong>: {{extraservice.extra_message}} </p>
+                    </div>
+                </div>
+              </div>
+              {% endfor %} 
+              {% for customservice in customservices %}
+              <div class="col-lg-6">
+                <div class="card border border-success">                  
+                    <div class="card-body">
+                      <a href="" data-bs-toggle="modal" data-bs-target="#customModalScrollableEdit" class="editTax">
+                        <i class="mdi mdi-lead-pencil"></i>                    
+                      </a>
+                      <a href="" onclick="return DelItem();" class="editTrash">
+                      <i class="far fa-trash-alt"></i>
+                      </a>
+                      <p><strong>Service name</strong>: {{customservice.custom_service_name}} </p>
+                      <p><strong>Provided</strong>: {{customservice.custom_service_provided}} </p>
+                      <p><strong>Fee basis</strong>: {{customservice.custom_fee_basis}} </p>
+                      <p><strong>Price in INR</strong>: {{customservice.custom_service_price}} </p>
+                      <p><strong>Earliest the guest can order it</strong>: {{customservice.custom_earliest_guest_order}} </p>
+                      <p><strong>Latest the guest can order it</strong>: {{customservice.custom_latest_guest_order}} </p>
+                      <p><strong>Guest can cancel the order</strong>: {{customservice.custom_guest_cancel_order}} </p>
+                      <p><strong>Additional information</strong>: {{customservice.custom_extra_message}} </p>
+                    </div>
+                </div>
+              </div>
+              {% endfor %} 
+              <div class="col-lg-4">
+                <div class="card border border-success">                  
+                    <div class="card-body text-center">
+                        <a href="" data-bs-toggle="modal" data-bs-target="#extraModalScrollable">
+                            <i class="fas fa-plus"></i>
+                            <h5 class="card-title mt-0">Add extra</h5>                        
+                        </a>
+                    </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border border-success">                  
+                    <div class="card-body text-center">
+                        <a href="" data-bs-toggle="modal" data-bs-target="#customModalScrollable">
+                            <i class="fas fa-plus"></i>
+                            <h5 class="card-title mt-0">Add custom field</h5>                        
+                        </a>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>    
+    </div>
+</div>
+{% include 'users/base/footer.html'%} 
+</div>
+</div>
+<div class="modal fade" id="taxModalScrollable" tabindex="-1" role="dialog"
+aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title mt-0" id="taxModalScrollableTitle">Tax</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            
+          <form method="POST" enctype="multipart/form-data" class="post-form" action="/rentals/tax-insert/{{rental.id}}">
+            {% csrf_token %}
+             
+             
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Tax type<span class="strict">*</span></label>
+                        <select name="tax_type" class="form-select" required>
+                            <option value="" disabled="disabled" selected>--Select--</option>
+                            <option value="City tax">City tax</option>
+                            <option value="Destination fee">Destination fee</option>
+                            <option value="Goods and services tax">Goods and services tax</option>
+                            <option value="Government tax">Government tax</option>
+                            <option value="Local tax">Local tax</option>
+                            <option value="Resort fee">Resort fee</option>
+                            <option value="Tax">Tax</option>
+                            <option value="Tourism fee">Tourism fee</option>
+                            <option value="VAT (Value Added Tax)">VAT (Value Added Tax)</option>
+                           
+                          </select>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Fee basis<span class="strict">*</span></label>
+                        <select name="fee_basis" class="form-select" id="feeBasis" required>
+                            <option value="" disabled="disabled" selected>--Select--</option>                        
+                            <option value="% of Rental Amount">% of Rental Amount</option>
+                            <option value="Per adult / day">Per adult / day</option>
+                            <option value="Per adult / stay">Per adult / stay</option>
+                            <option value="Per adult / week">Per adult / week</option>
+                            <option value="Per day">Per day</option>
+                            <option value="Per person / day">Per person / day</option>
+                            <option value="Per person / stay">Per person / stay</option>
+                            <option value="Per person / week">Per person / week</option>
+                            <option value="Per stay">Per stay</option>
+                            <option value="Per week">Per week</option>                            
+                          </select>
+                    </div>
+                </div> 
+
+                <div class="row mb-3 hide" id="TaxPercentage">
+                  <div class="col-lg-6">
+                      <label class="form-label fw6">Percentage<span class="strict">*</span></label>
+                      <input type="text" name="percentage" class="form-control">
+                  </div>
+              </div> 
+              <div class="row mb-3 hide" id="TaxAmount">
+                <div class="col-lg-6">
+                    <label class="form-label fw6">Amount in<span class="strict">*</span></label>
+                    <input type="text" name="amountin" class="form-control">
+                </div>
+            </div> 
+            <div class="modal-footer">
+              
+              <button type="submit"
+                  class="btn btn-primary waves-effect waves-light">Save
+                  </button>
+          </div>
+             
+            </form>
+          
+        </div>
+        
+    </div>
+</div>
+</div>
+<div class="modal fade" id="taxModalScrollableEdit" tabindex="-1" role="dialog"
+aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title mt-0" id="taxModalScrollableTitle">Tax</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            
+          <form method="POST" enctype="multipart/form-data" class="post-form" action="/rentals/tax-update/{{rental.id}}">
+            {% csrf_token %}
+             
+             
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Tax type<span class="strict">*</span></label>
+                        <select name="tax_type" class="form-select" required>
+                            <option value="" disabled="disabled" selected>--Select--</option>
+                            <option value="City tax" {% if rentaltax.tax_type == "City tax" %} selected {% endif %}>City tax</option>
+                            <option value="Destination fee" {% if rentaltax.tax_type == "Destination fee" %} selected {% endif %}>Destination fee</option>
+                            <option value="Goods and services tax" {% if rentaltax.tax_type == "Goods and services tax" %} selected {% endif %}>Goods and services tax</option>
+                            <option value="Government tax" {% if rentaltax.tax_type == "Government tax" %} selected {% endif %}>Government tax</option>
+                            <option value="Local tax" {% if rentaltax.tax_type == "Local tax" %} selected {% endif %}>Local tax</option>
+                            <option value="Resort fee" {% if rentaltax.tax_type == "Resort fee" %} selected {% endif %}>Resort fee</option>
+                            <option value="Tax" {% if rentaltax.tax_type == "Tax" %} selected {% endif %}>Tax</option>
+                            <option value="Tourism fee" {% if rentaltax.tax_type == "Tourism fee" %} selected {% endif %}>Tourism fee</option>
+                            <option value="VAT" {% if rentaltax.tax_type == "VAT" %} selected {% endif %}>VAT (Value Added Tax)</option>
+                           
+                          </select>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Fee basis<span class="strict">*</span></label>
+                        <select name="fee_basis" class="form-select" id="feeBasis" required>
+                            <option value="" disabled="disabled" selected>--Select--</option>                        
+                            <option value="% of Rental Amount">% of Rental Amount</option>
+                            <option value="Per adult / day">Per adult / day</option>
+                            <option value="Per adult / stay">Per adult / stay</option>
+                            <option value="Per adult / week">Per adult / week</option>
+                            <option value="Per day">Per day</option>
+                            <option value="Per person / day">Per person / day</option>
+                            <option value="Per person / stay">Per person / stay</option>
+                            <option value="Per person / week">Per person / week</option>
+                            <option value="Per stay">Per stay</option>
+                            <option value="Per week">Per week</option>                            
+                          </select>
+                    </div>
+                </div> 
+
+                <div class="row mb-3 hide" id="TaxPercentage">
+                  <div class="col-lg-6">
+                      <label class="form-label fw6">Percentage<span class="strict">*</span></label>
+                      <input type="text" name="percentage" class="form-control">
+                  </div>
+              </div> 
+              <div class="row mb-3 hide" id="TaxAmount">
+                <div class="col-lg-6">
+                    <label class="form-label fw6">Amount in<span class="strict">*</span></label>
+                    <input type="text" name="amountin" class="form-control">
+                </div>
+            </div> 
+            <div class="modal-footer">
+              
+              <button type="submit"
+                  class="btn btn-primary waves-effect waves-light">Update
+                  </button>
+          </div>
+             
+            </form>
+          
+        </div>
+        
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="extraModalScrollable" tabindex="-1" role="dialog"
+aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title mt-0" id="extraModalScrollableTitle">Optional extra services</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            
+          <form method="POST" enctype="multipart/form-data" class="post-form" action="/rentals/extra-services-insert/{{rental.id}}">
+            {% csrf_token %}
+             
+             
+             
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Service name<span class="strict">*</span></label>
+                        <select name="service_name" class="form-select">
+                            <option value="" disabled="disabled" selected>--Select--</option>
+                            <option value="Additional Cleaning">Additional Cleaning</option>
+                            <option value="Air-conditioning">Air-conditioning</option>
+                            <option value="Airport transfer">Airport transfer</option>
+                            <option value="Baby cot">Baby cot</option>
+                            <option value="Barbecue">Barbecue</option>
+                            <option value="Bed linen">Bed linen</option>
+                            <option value="Bike rental">Bike rental</option>
+                            <option value="Boat berth">Boat berth</option>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Car rental">Car rental</option>
+                            <option value="Early check-in">Early check-in</option>
+                            <option value="Electricity">Electricity</option>
+                            <option value="Heated Pool">Heated Pool</option>
+                            <option value="Heating">Heating</option>
+                            <option value="High chair">High chair</option>
+                            <option value="Internet">Internet</option>
+                            <option value="Jacuzzi">Jacuzzi</option>
+                            <option value="Kitchen linen">Kitchen linen</option>
+                            <option value="Late check-out">Late check-out</option>
+                            <option value="Laundry service">Laundry service</option>
+                            <option value="Linen package (bed linen + towel)">Linen package (bed linen + towel)</option>
+                            <option value="Meditation class">Meditation class</option>
+                            <option value="Muay Thai Gym">Muay Thai Gym</option>
+                            <option value="Parking">Parking</option>
+                            <option value="Pool">Pool</option>
+                            <option value="Sunbed">Sunbed</option>
+                            <option value="Tennis class">Tennis class</option>
+                            <option value="Tennis court">Tennis court</option>
+                            <option value="Towel">Towels</option>
+                            <option value="Transfer">Transfer</option>
+                            <option value="Umbrella">Umbrella</option>
+                            <option value="Waste sorting">Waste sorting</option>
+                            <option value="Welcome package">Welcome package</option>
+                            <option value="Yoga class">Yoga class</option>                           
+                          </select>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label fw6">Provided</label>
+                      <select name="service_provided" id="serviceProvided" class="form-select">
+                          <option value="" disabled="disabled" selected>--Select--</option>
+                          <option value="Free">Free</option>
+                          <option value="For a fee">For a fee</option>                          
+                        </select>
+                  </div>
+                  </div>
+                  <div class="hide" id="extraServices">
+                  <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Fee basis</label>
+                        <select name="fee_basis" class="form-select" >
+                            <option value="" disabled="disabled" selected>--Select--</option>                        
+                            <option value="Per cleaning">Per cleaning</option>
+                            <option value="Per person / cleaning">Per person / cleaning</option>                                                   
+                          </select>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label fw6">Price in INR<span class="strict">*</span></label>
+                      <input type="text" class="form-control" name="service_price">
+                  </div>
+                </div> 
+                <div class="row mb-3">
+                  <div class="col-lg-6">
+                      <label class="form-label fw6">Earliest the guest can order it</label>
+                      <select name="earliest_guest_order" class="form-select">
+                          <option value="" disabled="disabled" selected>--Select--</option>                        
+                          <option value="At the time of booking">At the time of booking</option>
+                          <option value="48 hours before check-in">48 hours before check-in</option>
+                          <option value="24 hours before check-in">24 hours before check-in</option>
+                          <option value="48 hours before check-out">48 hours before check-out</option>
+                          <option value="24 hours before check-out">24 hours before check-out</option>                                                  
+                        </select>
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="form-label fw6">Latest the guest can order it</label>
+                    <select name="latest_guest_order" class="form-select">
+                      <option value="" disabled="disabled" selected>--Select--</option>                        
+                      <option value="At the time of booking">At the time of booking</option>
+                      <option value="48 hours before check-in">48 hours before check-in</option>
+                      <option value="24 hours before check-in">24 hours before check-in</option>
+                      <option value="48 hours before check-out">48 hours before check-out</option>
+                      <option value="24 hours before check-out">24 hours before check-out</option>
+                      <option value="No restriction">No restriction</option>                                                   
+                    </select>
+                </div>
+              </div> 
+              <div class="row mb-3">
+                <div class="col-lg-6">
+                    <label class="form-label fw6">Guest can cancel the order</label>
+                    <select name="guest_cancel_order" class="form-select">
+                        <option value="" disabled="disabled" selected>--Select--</option>                        
+                        <option value="24 hours before check-in">24 hours before check-in</option>
+                        <option value="Any time before check-out">Any time before check-out</option> 
+                        <option value="Guest cannot cancel order">Guest cannot cancel order</option>                                                  
+                    </select>
+                </div>               
+            </div>  
+          </div>
+            <div class="row mb-3">
+              <div class="col-lg-12">
+                  <label class="form-label fw6">Additional information for the guest</label>
+                 <textarea class="form-control" name="extra_message"></textarea>
+              </div>               
+          </div> 
+          <div class="modal-footer">
+            
+            <button type="submit"
+                class="btn btn-primary waves-effect waves-light">Save
+                </button>
+        </div>
+       
+            </form>
+          
+        </div>
+        
+    </div>
+</div>
+</div>
+<div class="modal fade" id="extraModalScrollableEdit" tabindex="-1" role="dialog"
+aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title mt-0" id="extraModalScrollableTitle">Optional extra services</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            
+          <form method="POST" enctype="multipart/form-data" class="post-form" action="/rentals/extra-services-insert/{{rental.id}}">
+            {% csrf_token %}
+             
+             
+             
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Service name<span class="strict">*</span></label>
+                        <select name="service_name" class="form-select">
+                            <option value="" disabled="disabled" selected>--Select--</option>
+                            <option value="Additional Cleaning">Additional Cleaning</option>
+                            <option value="Air-conditioning">Air-conditioning</option>
+                            <option value="Airport transfer">Airport transfer</option>
+                            <option value="Baby cot">Baby cot</option>
+                            <option value="Barbecue">Barbecue</option>
+                            <option value="Bed linen">Bed linen</option>
+                            <option value="Bike rental">Bike rental</option>
+                            <option value="Boat berth">Boat berth</option>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Car rental">Car rental</option>
+                            <option value="Early check-in">Early check-in</option>
+                            <option value="Electricity">Electricity</option>
+                            <option value="Heated Pool">Heated Pool</option>
+                            <option value="Heating">Heating</option>
+                            <option value="High chair">High chair</option>
+                            <option value="Internet">Internet</option>
+                            <option value="Jacuzzi">Jacuzzi</option>
+                            <option value="Kitchen linen">Kitchen linen</option>
+                            <option value="Late check-out">Late check-out</option>
+                            <option value="Laundry service">Laundry service</option>
+                            <option value="Linen package (bed linen + towel)">Linen package (bed linen + towel)</option>
+                            <option value="Meditation class">Meditation class</option>
+                            <option value="Muay Thai Gym">Muay Thai Gym</option>
+                            <option value="Parking">Parking</option>
+                            <option value="Pool">Pool</option>
+                            <option value="Sunbed">Sunbed</option>
+                            <option value="Tennis class">Tennis class</option>
+                            <option value="Tennis court">Tennis court</option>
+                            <option value="Towel">Towels</option>
+                            <option value="Transfer">Transfer</option>
+                            <option value="Umbrella">Umbrella</option>
+                            <option value="Waste sorting">Waste sorting</option>
+                            <option value="Welcome package">Welcome package</option>
+                            <option value="Yoga class">Yoga class</option>                           
+                          </select>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label fw6">Provided</label>
+                      <select name="service_provided" id="serviceProvided" class="form-select">
+                          <option value="" disabled="disabled" selected>--Select--</option>
+                          <option value="Free">Free</option>
+                          <option value="For a fee">For a fee</option>                          
+                        </select>
+                  </div>
+                  </div>
+                  <div class="hide" id="extraServices">
+                  <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Fee basis</label>
+                        <select name="fee_basis" class="form-select" >
+                            <option value="" disabled="disabled" selected>--Select--</option>                        
+                            <option value="Per cleaning">Per cleaning</option>
+                            <option value="Per person / cleaning">Per person / cleaning</option>                                                   
+                          </select>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label fw6">Price in INR<span class="strict">*</span></label>
+                      <input type="text" class="form-control" name="service_price">
+                  </div>
+                </div> 
+                <div class="row mb-3">
+                  <div class="col-lg-6">
+                      <label class="form-label fw6">Earliest the guest can order it</label>
+                      <select name="earliest_guest_order" class="form-select">
+                          <option value="" disabled="disabled" selected>--Select--</option>                        
+                          <option value="At the time of booking">At the time of booking</option>
+                          <option value="48 hours before check-in">48 hours before check-in</option>
+                          <option value="24 hours before check-in">24 hours before check-in</option>
+                          <option value="48 hours before check-out">48 hours before check-out</option>
+                          <option value="24 hours before check-out">24 hours before check-out</option>                                                  
+                        </select>
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="form-label fw6">Latest the guest can order it</label>
+                    <select name="latest_guest_order" class="form-select">
+                      <option value="" disabled="disabled" selected>--Select--</option>                        
+                      <option value="At the time of booking">At the time of booking</option>
+                      <option value="48 hours before check-in">48 hours before check-in</option>
+                      <option value="24 hours before check-in">24 hours before check-in</option>
+                      <option value="48 hours before check-out">48 hours before check-out</option>
+                      <option value="24 hours before check-out">24 hours before check-out</option>
+                      <option value="No restriction">No restriction</option>                                                   
+                    </select>
+                </div>
+              </div> 
+              <div class="row mb-3">
+                <div class="col-lg-6">
+                    <label class="form-label fw6">Guest can cancel the order</label>
+                    <select name="guest_cancel_order" class="form-select">
+                        <option value="" disabled="disabled" selected>--Select--</option>                        
+                        <option value="24 hours before check-in">24 hours before check-in</option>
+                        <option value="Any time before check-out">Any time before check-out</option> 
+                        <option value="Guest cannot cancel order">Guest cannot cancel order</option>                                                  
+                    </select>
+                </div>               
+            </div>  
+          </div>
+            <div class="row mb-3">
+              <div class="col-lg-12">
+                  <label class="form-label fw6">Additional information for the guest</label>
+                 <textarea class="form-control" name="extra_message"></textarea>
+              </div>               
+          </div> 
+          <div class="modal-footer">
+            
+            <button type="submit"
+                class="btn btn-primary waves-effect waves-light">Update
+                </button>
+        </div>
+       
+            </form>
+          
+        </div>
+        
+    </div>
+</div>
+</div>
+<div class="modal fade" id="customModalScrollable" tabindex="-1" role="dialog"
+aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title mt-0" id="customModalScrollableTitle">Optional custom services</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            
+          <form method="POST" enctype="multipart/form-data" class="post-form" action="/rentals/custom-services-insert/{{rental.id}}">
+            {% csrf_token %}
+             
+             
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Service name<span class="strict">*</span></label>
+                        <input type="text" name="custom_service_name" class="form-control" required>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label fw6">Provided</label>
+                      <select name="custom_service_provided" id="customProvided" class="form-select">
+                          <option value="" disabled="disabled" selected>--Select--</option>
+                          <option value="Free">Free</option>
+                          <option value="For a fee">For a fee</option>                          
+                        </select>
+                  </div>
+                  </div>
+                  <div class="hide" id="CustomServices">
+                  <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Fee basis<span class="strict">*</span></label>
+                        <select name="custom_fee_basis" class="form-select" >
+                            <option value="" disabled="disabled" selected>--Select--</option>                        
+                            <option value="Per day">Per day</option>
+                            <option value="Per night">Per night</option>
+                            <option value="Per person">Per person</option>
+                            <option value="Per person / night">Per person / night</option>
+                            <option value="Per person / stay">Per person / stay</option>
+                            <option value="Per person / week">Per person / week</option>
+                            <option value="Per stay">Per stay</option>
+                            <option value="Per unit">Per unit</option>
+                            <option value="Per unit / day">Per unit / day</option>
+                            <option value="Per week">Per week</option>
+                            <option value="Per hour">Per hour</option>                                                 
+                          </select>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label fw6">Price in INR<span class="strict">*</span></label>
+                      <input type="text" class="form-control" name="custom_service_price">
+                  </div>
+                </div> 
+                <div class="row mb-3">
+                  <div class="col-lg-6">
+                      <label class="form-label fw6">Earliest the guest can order it</label>
+                      <select name="custom_earliest_guest_order" class="form-select">
+                          <option value="" disabled="disabled" selected>--Select--</option>                        
+                          <option value="At the time of booking">At the time of booking</option>
+                          <option value="48 hours before check-in">48 hours before check-in</option>
+                          <option value="24 hours before check-in">24 hours before check-in</option>
+                          <option value="48 hours before check-out">48 hours before check-out</option>
+                          <option value="24 hours before check-out">24 hours before check-out</option>                                                
+                        </select>
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="form-label fw6">Latest the guest can order it</label>
+                    <select name="custom_latest_guest_order" class="form-select">
+                      <option value="" disabled="disabled" selected>--Select--</option>                        
+                      <option value="At the time of booking">At the time of booking</option>
+                      <option value="48 hours before check-in">48 hours before check-in</option>
+                      <option value="24 hours before check-in">24 hours before check-in</option>
+                      <option value="48 hours before check-out">48 hours before check-out</option>
+                      <option value="24 hours before check-out">24 hours before check-out</option>
+                      <option value="No restriction">No restriction</option>                                                  
+                    </select>
+                </div>
+              </div> 
+              <div class="row mb-3">
+                <div class="col-lg-6">
+                    <label class="form-label fw6">Guest can cancel the order</label>
+                    <select name="custom_guest_cancel_order" class="form-select">
+                        <option value="" disabled="disabled" selected>--Select--</option>                        
+                        <option value="24 hours before check-in">24 hours before check-in</option>
+                        <option value="Any time before check-out">Any time before check-out</option> 
+                        <option value="Guest cannot cancel order">Guest cannot cancel order</option>                                                   
+                    </select>
+                </div>               
+            </div> 
+          </div>
+            <div class="row mb-3">
+              <div class="col-lg-12">
+                  <label class="form-label fw6">Additional information for the guest</label>
+                 <textarea class="form-control" name="custom_extra_message"></textarea>
+              </div>               
+          </div> 
+          <div class="modal-footer">
+            <button type="submit"
+                class="btn btn-primary waves-effect waves-light">Save
+                </button>
+        </div>
+            </form>
+          
+        </div>
+       
+    </div>
+</div>
+</div>
+<div class="modal fade" id="customModalScrollableEdit" tabindex="-1" role="dialog"
+aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title mt-0" id="customModalScrollableTitle">Optional custom services</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            
+          <form method="POST" enctype="multipart/form-data" class="post-form" action="/rentals/custom-services-insert/{{rental.id}}">
+            {% csrf_token %}
+             
+             
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Service name<span class="strict">*</span></label>
+                        <input type="text" name="custom_service_name" class="form-control" required>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label fw6">Provided</label>
+                      <select name="custom_service_provided" id="customProvided" class="form-select">
+                          <option value="" disabled="disabled" selected>--Select--</option>
+                          <option value="Free">Free</option>
+                          <option value="For a fee">For a fee</option>                          
+                        </select>
+                  </div>
+                  </div>
+                  <div class="hide" id="CustomServices">
+                  <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw6">Fee basis<span class="strict">*</span></label>
+                        <select name="custom_fee_basis" class="form-select" >
+                            <option value="" disabled="disabled" selected>--Select--</option>                        
+                            <option value="Per day">Per day</option>
+                            <option value="Per night">Per night</option>
+                            <option value="Per person">Per person</option>
+                            <option value="Per person / night">Per person / night</option>
+                            <option value="Per person / stay">Per person / stay</option>
+                            <option value="Per person / week">Per person / week</option>
+                            <option value="Per stay">Per stay</option>
+                            <option value="Per unit">Per unit</option>
+                            <option value="Per unit / day">Per unit / day</option>
+                            <option value="Per week">Per week</option>
+                            <option value="Per hour">Per hour</option>                                                 
+                          </select>
+                    </div>
+                    <div class="col-lg-6">
+                      <label class="form-label fw6">Price in INR<span class="strict">*</span></label>
+                      <input type="text" class="form-control" name="custom_service_price">
+                  </div>
+                </div> 
+                <div class="row mb-3">
+                  <div class="col-lg-6">
+                      <label class="form-label fw6">Earliest the guest can order it</label>
+                      <select name="custom_earliest_guest_order" class="form-select">
+                          <option value="" disabled="disabled" selected>--Select--</option>                        
+                          <option value="At the time of booking">At the time of booking</option>
+                          <option value="48 hours before check-in">48 hours before check-in</option>
+                          <option value="24 hours before check-in">24 hours before check-in</option>
+                          <option value="48 hours before check-out">48 hours before check-out</option>
+                          <option value="24 hours before check-out">24 hours before check-out</option>                                                
+                        </select>
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="form-label fw6">Latest the guest can order it</label>
+                    <select name="custom_latest_guest_order" class="form-select">
+                      <option value="" disabled="disabled" selected>--Select--</option>                        
+                      <option value="At the time of booking">At the time of booking</option>
+                      <option value="48 hours before check-in">48 hours before check-in</option>
+                      <option value="24 hours before check-in">24 hours before check-in</option>
+                      <option value="48 hours before check-out">48 hours before check-out</option>
+                      <option value="24 hours before check-out">24 hours before check-out</option>
+                      <option value="No restriction">No restriction</option>                                                  
+                    </select>
+                </div>
+              </div> 
+              <div class="row mb-3">
+                <div class="col-lg-6">
+                    <label class="form-label fw6">Guest can cancel the order</label>
+                    <select name="custom_guest_cancel_order" class="form-select">
+                        <option value="" disabled="disabled" selected>--Select--</option>                        
+                        <option value="24 hours before check-in">24 hours before check-in</option>
+                        <option value="Any time before check-out">Any time before check-out</option> 
+                        <option value="Guest cannot cancel order">Guest cannot cancel order</option>                                                   
+                    </select>
+                </div>               
+            </div> 
+          </div>
+            <div class="row mb-3">
+              <div class="col-lg-12">
+                  <label class="form-label fw6">Additional information for the guest</label>
+                 <textarea class="form-control" name="custom_extra_message"></textarea>
+              </div>               
+          </div> 
+          <div class="modal-footer">
+            <button type="submit"
+                class="btn btn-primary waves-effect waves-light">Update
+                </button>
+        </div>
+            </form>
+          
+        </div>
+       
+    </div>
+</div>
+</div>
+<script src="/static/users/libs/jquery/jquery.min.js"></script>
+<script src="/static/users/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/users/libs/metismenu/metisMenu.min.js"></script>
+<script src="/static/users/libs/simplebar/simplebar.min.js"></script>
+<script src="/static/users/libs/node-waves/waves.min.js"></script>
+<script src="/static/users/libs/select2/js/select2.min.js"></script>
+<script src="/static/users/js/pages/ecommerce-add-product.init.js"></script>
+<script src="/static/users/js/app.js"></script>
+<script type="text/javascript">
+  $(function () {
+    $("#SecurityCheck").click(function () {
+        if ($(this).is(":checked")) {
+            $("#SecurityDeposit").show();
+        } else {
+            $("#SecurityDeposit").hide();
+        }
+    });
+});
+$(function () {
+  $("#CleaningCheck").click(function () {
+      if ($(this).is(":checked")) {
+          $("#CleaningDiv").show();
+      } else {
+          $("#CleaningDiv").hide();
+      }
+  });
+});
+
+$(document).ready(function(){
+  $('#cleaning_basis').on('change', function(){
+    var getSelectValue = $(this).val();
+   
+  if(getSelectValue == "mandatory" || getSelectValue == "optional"){
+    document.getElementById("CleaningPrice").style.display="block";
+  }else{
+      document.getElementById("CleaningPrice").style.display="none";
+  }
+});
+});
+
+$(document).ready(function(){
+  $('#feeBasis').on('change', function(){
+    var getSelectValue = $(this).val();
+   
+  if(getSelectValue == "% of Rental Amount"){
+    document.getElementById("TaxPercentage").style.display="block";
+    document.getElementById("TaxAmount").style.display="none";
+  }else{
+      document.getElementById("TaxPercentage").style.display="none";
+      document.getElementById("TaxAmount").style.display="block";
+  }
+});
+});
+
+$(document).ready(function(){
+  $('#serviceProvided').on('change', function(){
+    var getSelectValue = $(this).val();
+   
+  if(getSelectValue == "For a fee"){
+    document.getElementById("extraServices").style.display="block";
+  }else{
+      document.getElementById("extraServices").style.display="none";
+  }
+});
+});
+
+$(document).ready(function(){
+  $('#customProvided').on('change', function(){
+    var getSelectValue = $(this).val();
+   
+  if(getSelectValue == "For a fee"){
+    document.getElementById("CustomServices").style.display="block";
+  }else{
+      document.getElementById("CustomServices").style.display="none";
+  }
+});
+});
+</script>
+<script>
+  function DelItem() {
+
+      if(!confirm("Are You Sure to delete this"))
+      event.preventDefault();
+  }
+</script>
+<script>
+  $(".alert-success").fadeTo(3000, 500).slideUp(500, function(){
+      $(".alert-success").slideUp(500);
+  });
+</script>
+</body>
+</html>
